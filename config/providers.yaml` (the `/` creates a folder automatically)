@@ -1,0 +1,8 @@
+providers:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+    models:
+      - name: gpt-4o-mini
+        context_window: 128000
+        max_tokens: 4096
+        temperature: 0.1 
