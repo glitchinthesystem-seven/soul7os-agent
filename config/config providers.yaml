@@ -1,0 +1,87 @@
+# config/providers.yaml
+defaults:
+  temperature: 0.2
+  max_tokens: 1024
+  timeout_seconds: 60
+  rate_limits:
+    requests_per_minute: 60
+  cost_guard:
+    enabled: true
+    max_usd_per_minute: 1.50
+    max_usd_per_hour: 20.00
+
+providers:
+  - name: openai
+    enabled: true
+    api_base: https://api.openai.com/v1
+    api_key: ${
+    models:
+      chat:
+        - id: gpt-4o-mini
+          max_tokens: 16384
+          temperature: 0.2
+        - id: gpt-4o
+          max_tokens: 32768
+          temperature: 0.2
+      embeddings:
+        - id: text-embedding-3-small
+          dimensions: 1536
+      moderation:
+        - id: omni-moderation-latest
+
+  - name: grok
+    enabled: true
+    api_base: https://api.x.ai/v1
+    api_key: ${GROK_API_KEY}
+    models:
+      chat:
+        - id: grok-2-mini
+          max_tokens: 8192
+          temperature: 0.2
+        - id: grok-2
+          max_tokens: 8192
+          temperature: 0.2
+
+  - name: anthropic
+    enabled: false
+    api_base: https://api.anthropic.com
+    api_key: ${ANTHROPIC_API_KEY}
+    models:
+      chat:
+        - id: claude-3-5-sonnet-latest
+          max_tokens: 8000
+          temperature: 0.2
+
+  - name: azure_openai
+    enabled: false
+    api_base: ${AZURE_OPENAI_ENDPOINT}
+    api_key: ${AZURE_OPENAI_API_KEY}
+    api_version: 2024-05-01-preview
+    models:
+      chat:
+        - id: gpt-4o-mini
+          deployment: ${AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI}
+          max_tokens: 16384
+          temperature: 0.2
+      embeddings:
+        - id: text-embedding-3-small
+          deployment: ${AZURE_OPENAI_DEPLOYMENT_EMBED_SMALL}
+          dimensions: 1536
+
+fallbacks:
+  - provider: openai
+    model: gpt-4o-mini
+  - provider: grok
+    model: grok-2-mini
+
+retrieval:
+  vector:
+    provider: local
+    embedding_model:
+      provider: openai
+      model: text-embedding-3-small
+    similarity: cosine
+    top_k: 8
+  graph:
+    provider: local
+    max_depth: 3
